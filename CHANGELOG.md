@@ -9,7 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- `docs/DEVELOPMENT.md` — fresh-clone setup, Playwright browser cache, CI vs local `pnpm check`, troubleshooting.
+- Extension-page Playwright smoke (`tests/e2e/extension-smoke.spec.ts`) for debug and side panel after build.
+
+### Changed
+
+- `.trellis/spec/extension/` aligned with shadow DOM, supporting layers, CI vs local E2E tiers, and manual `/t`/`/n` QA split.
+- `docs/ARCHITECTURE.md` documents full layer map and `ldcv-*` as active UI prefix.
+
+### Removed
+
+- Unused legacy `src/content/cardViewApp.ts`.
 
 ### Changed
 

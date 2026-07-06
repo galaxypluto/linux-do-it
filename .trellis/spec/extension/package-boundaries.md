@@ -31,6 +31,7 @@ Use cases and interfaces for external dependencies.
 
 - `ports/` defines what the application needs (e.g. storage port).
 - `application/` orchestrates flows without knowing *how* it's rendered or stored.
+- `application/useCases/AnalyzeCurrentPageUseCase.ts` and `ports/AiPort.ts` are optional scaffolding for future AI features; they are not wired into runtime entrypoints today.
 
 ### `src/adapters/`
 
@@ -44,7 +45,17 @@ Implementations of ports.
 Site-specific data extraction and API calls.
 
 - `discourse/api.ts` handles raw API fetching and data normalization.
+- `sites/_registry.ts` resolves the active site adapter (`linuxdo` today).
 - Linux.do selectors belong in `src/sites/linuxdo/selectors.ts`, not scattered through domain or application code.
+
+### `src/layout/`, `src/preview/`, `src/shared/`, `src/storage/`
+
+Supporting layers that sit beside domain/UI:
+
+- `layout/`: masonry layout and intersection observers for card grids.
+- `preview/`: HTML sanitization helpers used before rendering cooked content.
+- `shared/`: cross-surface messaging schemas, credit-view pacing, reply-activity keys.
+- `storage/`: settings persistence helpers; prefer ports/adapters for new Chrome storage access.
 
 ### `src/content/` & `src/ui/`
 
@@ -52,6 +63,13 @@ DOM interaction, script injection, and visual components.
 
 - `content/mount.ts` orchestrates the boot process and state synchronization.
 - `ui/` handles rendering (Vanilla JS templates and React components).
+
+### Content root and shadow DOM
+
+- The list-route host element is `#linuxdo-card-view-root` (`ROOT_ID` in `mount.ts`).
+- Card view, Reader, and settings UI render inside an **open shadow root** attached to that host. Query and patch extension UI through `shadowRoot`, not `document` globals.
+- `pageStyle.ts` and `overlayStacking.ts` inject page-level CSS that targets `#linuxdo-card-view-root` from the light DOM; extension component CSS lives in the shadow tree (`base-list.css`, reader styles, React islands).
+- Topic-page enhancer on `/n/...` routes operates on **native** nested topic DOM outside the shadow root; do not mount `#linuxdo-card-view-root` on native topic pages.
 
 ### `public/pageBridge.js`
 
@@ -98,9 +116,10 @@ Contracts:
 
 Tests required:
 
-- Unit tests for topic route parsing and topic enhancement model/filter/navigation behavior.
+- Unit tests for topic route parsing and topic enhancement model/filter/navigation behavior (`tests/content/topicPageEnhancer.test.ts`).
 - DOM tests proving native nested posts are filtered/searched without extension-owned tree markup.
-- E2E smoke proving `/t` routes stay native with no enhancer controls, `/n` routes mount controls without `#linuxdo-card-view-root` or standalone topic roots.
+- **Automated E2E** (`tests/e2e/extension-smoke.spec.ts`): unpacked extension loads `debug.html` and `sidepanel.html` after `pnpm build`.
+- **Manual live QA** (isolated profile, `docs/QA_CHECKLIST.md`): `/t/...` routes stay native with no enhancer controls; `/n/...` routes mount enhancer controls without `#linuxdo-card-view-root` or a standalone extension topic page.
 
 ## Anti-Patterns
 

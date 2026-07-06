@@ -12,6 +12,7 @@ Reference files:
 - `docs/notes/`
 - `tests/content/privateMessageBridge.test.ts`
 - `tests/e2e/basic.spec.ts`
+- `tests/e2e/extension-smoke.spec.ts`
 
 ## Check Order
 
@@ -26,6 +27,16 @@ pnpm build
 pnpm e2e
 pnpm check
 ```
+
+**CI note:** GitHub Actions (`.github/workflows/ci.yml`) runs `typecheck`, `test`, and `build` only. Locally, `pnpm check` also runs Playwright E2E, including headed extension smoke (`tests/e2e/extension-smoke.spec.ts`). See `docs/DEVELOPMENT.md`.
+
+**E2E tiers:**
+
+| Tier | What | When |
+| --- | --- | --- |
+| Environment | `tests/e2e/basic.spec.ts` | Playwright install sanity |
+| Extension pages | `tests/e2e/extension-smoke.spec.ts` | After `pnpm build`; loads debug + sidepanel |
+| Live Linux.do | `docs/QA_CHECKLIST.md`, isolated profile | `/t` vs `/n` topic routes, login, native bridge |
 
 ## Logged-In QA Profile
 

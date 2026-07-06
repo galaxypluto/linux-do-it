@@ -46,7 +46,7 @@ If you skip the Playwright install step, `pnpm e2e` and `pnpm check` will fail w
 | `pnpm build` | Production build to `.output/chrome-mv3` |
 | `pnpm typecheck` | `wxt prepare` + `tsc --noEmit` |
 | `pnpm test` | Vitest unit tests (jsdom) |
-| `pnpm e2e` | Playwright smoke test(s) under `tests/e2e/` |
+| `pnpm e2e` | Playwright: `basic.spec.ts` (headless) + `extension-smoke.spec.ts` (headed, requires build) |
 | `pnpm check` | All of the above in sequence |
 | `pnpm icons` | Regenerate PNG icons from `assets/icon.svg` |
 | `pnpm zip` | Release zip via WXT |

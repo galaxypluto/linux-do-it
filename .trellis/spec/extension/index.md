@@ -18,7 +18,7 @@ Use this layer when work touches content-page Reader behavior, Linux.do/Discours
 ## Pre-Development Checklist
 
 - Read `AGENTS.md`.
-- Read `docs/ARCHITECTURE.md`.
+- Read `docs/ARCHITECTURE.md` and `docs/DEVELOPMENT.md` when touching setup, Playwright, or QA profiles.
 - Read the guideline file in this directory that owns the behavior being changed.
 - For site selectors or fixture work, read `.agents/skills/chrome-extension-workspace/SKILL.md`.
 - For cross-surface changes, trace: `src/content/mount.ts` → UI → native bridge → storage/settings → side panel.
