@@ -842,7 +842,7 @@ async function syncLoadedReaderPosts(
   try {
     const result = await syncTopicReadTimings(reader, { postNumbers, signal });
     if (result === "failed") {
-      console.warn("[linuxdo-reader] Failed to sync Discourse read timings", {
+      console.warn("[linux-do-it] Failed to sync Discourse read timings", {
         topicId: reader.id,
         postNumbers: Array.from(postNumbers)
       });
@@ -859,7 +859,7 @@ async function syncLoadedReaderPosts(
     if (error instanceof DOMException && error.name === "AbortError") {
       return false;
     }
-    console.warn("[linuxdo-reader] Failed to sync Discourse read timings", {
+    console.warn("[linux-do-it] Failed to sync Discourse read timings", {
       topicId: reader.id,
       error
     });

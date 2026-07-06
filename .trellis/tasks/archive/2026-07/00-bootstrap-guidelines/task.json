@@ -23,6 +23,6 @@
   "relatedFiles": [
     ".trellis/spec/extension/"
   ],
-  "notes": "Completed by migrating Chrome-EXE linux-do-it + linuxdo-reader engineering specs into .trellis/spec/extension/",
+  "notes": "Completed by bootstrapping extension engineering specs into .trellis/spec/extension/",
   "meta": {}
 }

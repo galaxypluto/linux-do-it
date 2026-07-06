@@ -1,17 +1,16 @@
 ---
 name: chrome-extension-workspace
-description: 在 Linux Do It 独立仓库（或 Chrome-EXE 多插件 workspace）中用 AI coding agent 开发、组织和实测 Chrome MV3 插件，重点覆盖 WXT、TypeScript、分层架构、站点适配器、登录态 E2E、Chrome DevTools MCP、权限审查和发布工作流。
+description: 在 Linux Do It 独立仓库中用 AI coding agent 开发、组织和实测 Chrome MV3 插件，重点覆盖 WXT、TypeScript、分层架构、站点适配器、登录态 E2E、Chrome DevTools MCP、权限审查和发布工作流。
 ---
 
 # Chrome 插件 Workspace Skill
 
 ## 0. 使用边界
 
-当用户要在 **Linux Do It** 独立仓库（本仓库根目录）或 `Chrome-EXE` 多插件 workspace 中开发、重构、测试、适配或发布 Chrome 插件时，使用本 skill。尤其适用于：
+当用户要在 **Linux Do It** 本仓库（仓库根目录的 WXT 扩展）中开发、重构、测试、适配或发布时，使用本 skill。尤其适用于：
 
 - Windows 本地开发 Chrome 插件。
 - Manifest V3 插件。
-- 多个插件共享同一套 Trellis / Codex / pnpm workspace / agent skill。
 - 插件需要在目标网站登录后才生效。
 - 插件包含 content script、background service worker、popup、side panel、options page。
 - 用户希望 AI agent 能自己运行浏览器、观察结果、修复失败。
@@ -106,31 +105,44 @@ fetch 直接调用
 
 ## 3. 推荐目录结构
 
-当前 workspace 的共享层：
+本仓库是**单包** WXT 扩展，源码在仓库根目录：
 
 ```txt
-Chrome-EXE/
+linux-do-it/
   AGENTS.md
   package.json
-  pnpm-workspace.yaml
+  wxt.config.ts
+  playwright.config.ts
   .trellis/
-  .agents/
-    skills/
-      chrome-extension-workspace/
-  .codex/
+  .agents/skills/chrome-extension-workspace/
+  entrypoints/
+  src/
+    domain/
+    application/
+    ports/
+    adapters/
+    content/
+    ui/
+    discourse/
+    sites/
+      linuxdo/
+        selectors.ts
+        fixtures/
+  tests/
+    unit/
+    e2e/
+  scripts/
   docs/
-    SITE_CAPTURES.md
-  tools/
-    site-fixture/      # shared local fixture extraction CLI
-      sites/           # allowlisted site capture scenarios
-  site-captures/        # ignored raw target-site captures
-  plugins/
+  .profiles/              # gitignored — 登录态 QA
+  .output/chrome-mv3/     # gitignored — 构建输出
 ```
 
-每个插件是 `plugins/<extension-slug>/` 下的独立 WXT 包。初始化或重构插件时，优先组织为：
+新增站点适配或重构时，优先保持上述分层。`templates/` 目录保留通用 WXT 脚手架示例（路径中 `plugins/<extension-slug>/` 表示**其他多插件 workspace** 的占位符，本仓库请映射到根目录）。
+
+通用插件包分层参考（路径前缀按上表替换为仓库根目录）：
 
 ```txt
-plugins/<extension-slug>/
+<repo-root>/
   package.json
   wxt.config.ts
   tsconfig.json
@@ -533,7 +545,9 @@ refresh token
 
 ## 8. 初始化命令模板
 
-如果是在当前 workspace 新增插件，优先从 workspace 根目录创建包：
+> **Linux Do It 本仓库**已在根目录完成 WXT 初始化。日常只需 `pnpm install`、`pnpm exec playwright install chromium`（首次）、`pnpm check`。本节与 `plugins/<extension-slug>/` 相关命令面向**从零创建新扩展**或多插件 workspace，不要在本仓库下再建 `plugins/` 目录。
+
+如果是在多插件 workspace 中新增插件，从 workspace 根目录创建包：
 
 ```powershell
 pnpm dlx wxt@latest init plugins/<extension-slug>
@@ -790,7 +804,7 @@ export type SiteDetectionResult = {
 
 ```txt
 site-captures/<site>/<date-scenario>/raw/     本地原始抓取包，默认忽略，不进 Git
-plugins/<extension-slug>/src/sites/<site>/fixtures/  脱敏、裁剪、稳定化后的测试 fixture，可以进 Git
+src/sites/<site>/fixtures/                    脱敏、裁剪、稳定化后的测试 fixture，可以进 Git
 ```
 
 fixture 必须脱敏：
@@ -805,15 +819,15 @@ fixture 必须脱敏：
 当手工裁剪容易重复出错时，使用 workspace 工具生成候选 fixture：
 
 ```powershell
-pnpm fixture:capture -- --input <raw-html> --base-url https://example.com/page --selector "main" --out plugins/<extension-slug>/src/sites/<site>/fixtures/<case>.html
-pnpm fixture:capture -- --url https://example.com/page --selector "main" --out plugins/<extension-slug>/src/sites/<site>/fixtures/<case>.html
-pnpm fixture:capture -- --preset linuxdo --url https://linux.do/latest --out plugins/linuxdo-reader/src/sites/linuxdo/fixtures/<case>.html
+pnpm fixture:capture -- --input <raw-html> --base-url https://example.com/page --selector "main" --out src/sites/<site>/fixtures/<case>.html
+pnpm fixture:capture -- --url https://example.com/page --selector "main" --out src/sites/<site>/fixtures/<case>.html
+pnpm fixture:capture -- --preset linuxdo --url https://linux.do/latest --out src/sites/linuxdo/fixtures/<case>.html
 pnpm fixture:capture:site -- --site linuxdo --scenario latest
 pnpm fixture:probe -- --input <raw-html> --selector "main"
-pnpm fixture:smoke:site -- --site linuxdo --scenario latest --headed --user-data-dir plugins/linuxdo-reader/.profiles/fixture-capture
+pnpm fixture:smoke:site -- --site linuxdo --scenario latest --headed --user-data-dir .profiles/fixture-capture
 ```
 
-登录态页面只能配合隔离 profile 使用 `--user-data-dir plugins/<extension-slug>/.profiles/<name>`，不要让工具读取日常 Chrome profile。工具输出是 review candidate，不是自动安全结果；DOMPurify 负责 XSS/危险 HTML 清洗，不负责识别真实用户名、私信、账号状态或业务敏感 ID，必要时用 `--replace real=fake` 做显式脱敏。
+登录态页面只能配合隔离 profile 使用 `--user-data-dir .profiles/<name>`，不要让工具读取日常 Chrome profile。工具输出是 review candidate，不是自动安全结果；DOMPurify 负责 XSS/危险 HTML 清洗，不负责识别真实用户名、私信、账号状态或业务敏感 ID，必要时用 `--replace real=fake` 做显式脱敏。
 
 如果工具提示捕获到 Cloudflare/Turnstile challenge page，不要提交该输出；改用 headed + isolated profile，或对 Linux.do 使用 `--preset linuxdo`。如果工具提示候选 fixture 超过 20 KB，先最小化 DOM，再进入 review 和 `fixture:scan`。
 
@@ -824,7 +838,7 @@ pnpm fixture:smoke:site -- --site linuxdo --scenario latest --headed --user-data
 fixture 进入 Git 前必须至少执行：
 
 ```powershell
-pnpm fixture:scan -- plugins/<extension-slug>/src/sites/<site>/fixtures
+pnpm fixture:scan -- src/sites/<site>/fixtures
 ```
 
 首次使用扫描器时运行：
@@ -899,8 +913,8 @@ Chrome Web Store 单一目的说明
 ### 15.1 Bootstrap
 
 ```txt
-请读取本 skill，为我初始化一个 WXT + TypeScript + React 的 Chrome MV3 插件项目。要求：
-1. 在 plugins/<extension-slug>/ 下创建独立插件包，不复制 workspace 级 .trellis/.agents/.codex。
+请读取本 skill。若目标仓库尚未有 WXT 扩展，在约定目录（多插件 workspace 为 plugins/<extension-slug>/；单仓库则为根目录）初始化 Chrome MV3 项目。要求：
+1. 不复制宿主仓库已有的 .trellis/.agents/.codex（若已存在）。
 2. 使用分层架构：domain/application/ports/adapters/sites/entrypoints。
 3. 加入 Playwright 扩展测试 fixture。
 4. 加入 debug page。
@@ -908,6 +922,8 @@ Chrome Web Store 单一目的说明
 6. 加入权限说明文档。
 7. 不实现具体业务功能，先搭好工程和测试闭环。
 ```
+
+**Linux Do It** 已完成上述脚手架；新功能请直接改根目录 `src/` / `entrypoints/` / `tests/`。
 
 ### 15.2 新增登录态网站适配
 

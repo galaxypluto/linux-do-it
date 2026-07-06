@@ -87,9 +87,9 @@ export async function trackCreditTopicView(
     return response.ok;
   } catch (error) {
     if (error instanceof DOMException && error.name === "AbortError") {
-      console.warn(`[linuxdo-reader] Credit topic view request timed out for ${topic.id}`);
+      console.warn(`[linux-do-it] Credit topic view request timed out for ${topic.id}`);
     } else {
-      console.warn(`[linuxdo-reader] Failed to track credit topic view for ${topic.id}:`, error);
+      console.warn(`[linux-do-it] Failed to track credit topic view for ${topic.id}:`, error);
     }
     return false;
   } finally {

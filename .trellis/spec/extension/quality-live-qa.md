@@ -7,11 +7,11 @@ Reference files:
 - `AGENTS.md`
 - `package.json`
 - `playwright.config.ts`
+- `docs/DEVELOPMENT.md`
 - `docs/QA_CHECKLIST.md`
 - `docs/notes/`
 - `tests/content/privateMessageBridge.test.ts`
-- `tests/e2e/extension-smoke.spec.ts`
-- `tests/e2e/logged-in-site.spec.ts`
+- `tests/e2e/basic.spec.ts`
 
 ## Check Order
 

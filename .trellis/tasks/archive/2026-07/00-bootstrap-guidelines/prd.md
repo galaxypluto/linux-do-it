@@ -21,7 +21,7 @@ the rest conversationally.
 
 ## Status (update the checkboxes as you complete each item)
 
-- [x] Migrated extension guidelines from Chrome-EXE monorepo
+- [x] Migrated extension guidelines into standalone repo specs
 - [x] Added code examples and source/test anchors in spec files
 
 ---
