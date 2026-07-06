@@ -1,0 +1,16 @@
+export const selectors = {
+  appRoot: '#main-outlet, .d-header, #site-text-logo',
+  loginButton: '.login-button, button.login-button, a.login-button',
+  userMenu: '.current-user, .d-header-icons .current-user, button[aria-label*="profile"]',
+  topicTitle: '#topic-title h1, h1#topic-title, .fancy-title',
+  topicPost: '.topic-post, article[data-post-id]',
+  topicPostContainer: '.topic-post',
+  topicPostArticle: 'article[data-post-id]',
+  topicPostAuthor: '[data-user-card], a[href^="/u/"]',
+  topicPostAuthorName: '.names .username, .topic-meta-data .username, .topic-meta-data [data-user-card], .topic-body [data-user-card]',
+  nestedTopicView: '.nested-view',
+  nestedTopicPost: '.nested-view__op-article[data-post-number], .nested-post__article[data-post-number]',
+  nestedTopicOpBadge: '.nested-post__op-badge',
+  topicList: '.topic-list, .latest-topic-list',
+  primaryContent: '#main-outlet, main, .topic-body',
+} as const;

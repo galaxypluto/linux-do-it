@@ -1,0 +1,164 @@
+@keyframes ldcv-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes ldcv-reading-border {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--accent) 42%, transparent),
+      0 0 0 4px color-mix(in srgb, var(--accent) 10%, transparent),
+      0 14px 34px color-mix(in srgb, var(--accent) 14%, transparent);
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--accent) 76%, transparent),
+      0 0 0 5px color-mix(in srgb, var(--accent) 18%, transparent),
+      0 18px 46px color-mix(in srgb, var(--accent) 22%, transparent);
+  }
+}
+
+@keyframes ldcv-read-sweep {
+  from {
+    opacity: 0;
+    transform: translateX(-120%);
+  }
+  18% {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    transform: translateX(120%);
+  }
+}
+
+@keyframes ldcv-card-enter {
+  from {
+    filter: blur(8px);
+    opacity: 0;
+  }
+  62% {
+    filter: blur(1.5px);
+    opacity: 1;
+  }
+  to {
+    filter: blur(0);
+    opacity: 1;
+  }
+}
+
+@keyframes ldcv-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes ldcv-unseen-pulse {
+  0%,
+  100% {
+    opacity: 0.85;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+
+@keyframes ldcv-skeleton-shimmer {
+  from {
+    background-position: -200% 0;
+  }
+  to {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes ldcv-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes ldcv-toast-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.96);
+  }
+}
+@keyframes ldcv-blur-fade-in {
+  from {
+    filter: blur(6px);
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    filter: blur(0);
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ldcv-reader-comment.ldcv-blur-fade-in {
+  animation: ldcv-reader-comment-fade-in 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: var(--ldcv-enter-delay, 0ms);
+}
+
+@keyframes ldcv-reader-comment-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ldcv-card.is-selected,
+  .ldcv-card.is-entering,
+  .ldcv-card.is-just-read:not(.is-selected)::after,
+  .ldcv-state.is-unseen::before,
+  .ldcv-reader-comment {
+    animation: none;
+    filter: none;
+    transform: none;
+  }
+  img {
+    transition: none !important;
+    opacity: 1 !important;
+    filter: none !important;
+  }
+}
+
+/* Image loading smooth transition */
+img.ldcv-img-loading {
+  opacity: 0;
+  filter: blur(8px) grayscale(100%);
+}
+
+img.ldcv-img-transitioning {
+  transition: opacity 420ms ease-out, filter 500ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, filter;
+}
+
+.ldcv-image-viewer img {
+  opacity: 1 !important;
+  filter: none !important;
+  transition: none !important;
+}
+

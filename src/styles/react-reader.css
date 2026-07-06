@@ -1,0 +1,35 @@
+@import "tailwindcss/utilities" source(none);
+
+@source "../ui/react/**/*.{ts,tsx}";
+
+.ldcv-reader-backdrop.ldcv-reader-shell-backdrop {
+  touch-action: none;
+}
+
+.ldcv-reader-modal.ldcv-reader-shell {
+  --ldcv-reader-shell-radius: 8px;
+  border-radius: var(--ldcv-reader-shell-radius);
+  box-shadow:
+    0 22px 72px rgba(0, 0, 0, 0.34),
+    0 0 0 1px color-mix(in srgb, var(--accent) 18%, transparent);
+  isolation: isolate;
+  outline: 1px solid color-mix(in srgb, white 7%, transparent);
+}
+
+.ldcv-reader-modal.ldcv-reader-shell > .ldcv-reader-article,
+.ldcv-reader-modal.ldcv-reader-shell > .ldcv-reader-status,
+.ldcv-reader-modal.ldcv-reader-shell > .ldcv-reader-empty {
+  border-radius: var(--ldcv-reader-shell-radius);
+}
+
+.ldcv-reader-modal.ldcv-reader-shell[data-reader-shell-state="closing"] {
+  cursor: default;
+}
+
+@media (max-width: 700px) {
+  .ldcv-reader-modal.ldcv-reader-shell {
+    box-shadow:
+      0 16px 48px rgba(0, 0, 0, 0.32),
+      0 0 0 1px color-mix(in srgb, var(--accent) 16%, transparent);
+  }
+}

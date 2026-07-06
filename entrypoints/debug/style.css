@@ -1,0 +1,236 @@
+@import "tailwindcss" source(none);
+
+@source "./App.tsx";
+
+@layer utilities {
+  @keyframes fade-in-slide {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fade-in-slide {
+    animation: fade-in-slide 0.2s ease-out;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .animate-fade-in-slide { animation: none; }
+  }
+}
+
+@layer base {
+  :root {
+    --debug-bg: #f6f7fb;
+    --debug-text: #18181b;
+    --debug-surface: rgba(255, 255, 255, 0.92);
+    --debug-border: rgba(39, 39, 42, 0.12);
+    --debug-muted: #71717a;
+    background: var(--debug-bg);
+    color: var(--debug-text);
+    font-family:
+      Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --debug-bg: #101113;
+      --debug-text: #f4f4f5;
+      --debug-surface: rgba(24, 24, 27, 0.94);
+      --debug-border: rgba(244, 244, 245, 0.14);
+      --debug-muted: #a1a1aa;
+    }
+  }
+
+  body {
+    margin: 0;
+    min-width: 320px;
+    background: var(--debug-bg);
+    color: var(--debug-text);
+  }
+
+  button {
+    font: inherit;
+  }
+}
+
+@layer components {
+  .debug-toolbar,
+  .debug-card,
+  .debug-alert {
+    border: 1px solid var(--debug-border);
+    border-radius: 8px;
+    background: var(--debug-surface);
+    box-shadow: 0 16px 36px rgba(24, 24, 27, 0.08);
+  }
+
+  .debug-toolbar {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .debug-card {
+    min-width: 0;
+    padding: 1rem;
+  }
+
+  .debug-alert {
+    padding: 0.75rem 1rem;
+    color: #be123c;
+    background: #fff1f2;
+    border-color: rgba(225, 29, 72, 0.28);
+  }
+
+  .debug-row {
+    display: grid;
+    grid-template-columns: minmax(96px, 0.35fr) minmax(0, 0.65fr);
+    gap: 0.75rem;
+    padding: 0.55rem 0;
+    border-top: 1px solid var(--debug-border);
+  }
+
+  .debug-row:first-of-type {
+    border-top: 0;
+    padding-top: 0;
+  }
+
+  .debug-row dt {
+    color: var(--debug-muted);
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1.25rem;
+  }
+
+  .debug-row dd {
+    margin: 0;
+    color: var(--debug-text);
+    font-size: 0.8125rem;
+    line-height: 1.25rem;
+  }
+
+  .debug-dot {
+    width: 0.65rem;
+    height: 0.65rem;
+    flex: 0 0 auto;
+    border-radius: 999px;
+    box-shadow: 0 0 0 4px rgba(113, 113, 122, 0.12);
+  }
+
+  .debug-dot--success {
+    background: #059669;
+    box-shadow: 0 0 0 4px rgba(5, 150, 105, 0.14);
+  }
+
+  .debug-dot--warning {
+    background: #d97706;
+    box-shadow: 0 0 0 4px rgba(217, 119, 6, 0.16);
+  }
+
+  .debug-dot--neutral {
+    background: #71717a;
+  }
+
+  .debug-badge {
+    display: inline-flex;
+    max-width: 100%;
+    align-items: center;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    padding: 0.25rem 0.6rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1rem;
+    overflow-wrap: anywhere;
+  }
+
+  .debug-badge--success {
+    color: #047857;
+    background: #d1fae5;
+    border-color: rgba(5, 150, 105, 0.25);
+  }
+
+  .debug-badge--warning {
+    color: #92400e;
+    background: #fef3c7;
+    border-color: rgba(217, 119, 6, 0.3);
+  }
+
+  .debug-badge--neutral {
+    color: #3f3f46;
+    background: #f4f4f5;
+    border-color: rgba(113, 113, 122, 0.24);
+  }
+
+  .debug-badge--info {
+    color: #155e75;
+    background: #cffafe;
+    border-color: rgba(8, 145, 178, 0.28);
+  }
+
+  .debug-json {
+    margin: 0;
+    max-height: 28rem;
+    overflow: auto;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    border-radius: 6px;
+    background: #18181b;
+    color: #e4e4e7;
+    padding: 1rem;
+    font-size: 0.75rem;
+    line-height: 1.45;
+  }
+}
+
+@media (max-width: 560px) {
+  .debug-toolbar {
+    flex-direction: column;
+  }
+
+  .debug-toolbar button {
+    width: 100%;
+  }
+
+  .debug-row {
+    grid-template-columns: 1fr;
+    gap: 0.15rem;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .debug-alert {
+    color: #fecdd3;
+    background: rgba(127, 29, 29, 0.34);
+    border-color: rgba(251, 113, 133, 0.28);
+  }
+
+  .debug-badge--success {
+    color: #a7f3d0;
+    background: rgba(6, 78, 59, 0.58);
+  }
+
+  .debug-badge--warning {
+    color: #fde68a;
+    background: rgba(120, 53, 15, 0.58);
+  }
+
+  .debug-badge--neutral {
+    color: #e4e4e7;
+    background: rgba(63, 63, 70, 0.58);
+  }
+
+  .debug-badge--info {
+    color: #a5f3fc;
+    background: rgba(22, 78, 99, 0.58);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,8 @@
+.output/
+node_modules/
+.profiles/
+.env.local
+test-results/
+playwright-report/
+*.zip
+.wxt/
