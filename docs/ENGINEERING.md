@@ -1,6 +1,6 @@
 # Engineering boundaries
 
-Layering rules for Linux Do It (summarized from the original Chrome-EXE engineering spec).
+Layering rules for Linux Do It. **Canonical contracts** live in `.trellis/spec/extension/` (start at `index.md`). This file is a short summary for contributors browsing `docs/`.
 
 ## Layers
 

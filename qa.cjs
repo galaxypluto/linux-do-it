@@ -3,7 +3,7 @@ const path = require("path");
 
 (async () => {
   const extensionPath = path.resolve(".output/chrome-mv3");
-  const profilePath = path.resolve(".profiles/manual-ld-reader-study-qa");
+  const profilePath = path.resolve(".profiles/manual-linux-do-it-qa");
 
   const context = await chromium.launchPersistentContext(profilePath, {
     headless: false,
