@@ -20,6 +20,7 @@
 git clone https://github.com/galaxypluto/linux-do-it.git
 cd linux-do-it
 pnpm install
+pnpm exec playwright install chromium
 pnpm build
 ```
 
@@ -33,8 +34,11 @@ Download `linux-do-it-v1.0.0.zip` from [GitHub Releases](https://github.com/gala
 
 ```powershell
 pnpm install
+pnpm exec playwright install chromium   # required for pnpm check / pnpm e2e
 pnpm dev
 ```
+
+See **[docs/DEVELOPMENT.md](./docs/DEVELOPMENT.md)** for toolchain versions, Playwright browser cache, logged-in QA profile, and troubleshooting.
 
 Quality gate:
 
@@ -44,17 +48,9 @@ pnpm check
 
 Logged-in Linux.do QA: use an isolated Chrome profile (see `scripts/start-agent-chrome.ps1`). Never use your daily browser profile.
 
-## Relationship to other projects
-
-| Project | Role |
-| --- | --- |
-| **linux-do-it** (this repo) | Primary maintained extension — card view, Reader, side panel search |
-| [linuxdo-reader](https://github.com/galaxypluto/Chrome-EXE/tree/master/plugins/linuxdo-reader) | Earlier baseline in the [Chrome-EXE](https://github.com/galaxypluto/Chrome-EXE) monorepo; not a runtime dependency |
-
-This repository is **canonical**. The Chrome-EXE monorepo no longer vendors the extension source to keep plugin histories separate.
-
 ## Docs
 
+- [Development environment](./docs/DEVELOPMENT.md)
 - [Architecture](./docs/ARCHITECTURE.md)
 - [Engineering boundaries](./docs/ENGINEERING.md)
 - [Permissions](./docs/PERMISSIONS.md)

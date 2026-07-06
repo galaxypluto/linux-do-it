@@ -36,7 +36,7 @@ git tag v1.0.0
 git push origin v1.0.0
 ```
 
-Attach the ZIP from `plugins/linux-do-it/.output/*.zip` to the GitHub Release with release notes from `CHANGELOG.md`.
+Attach the ZIP from `.output/*.zip` (after `pnpm zip`) to the GitHub Release with release notes from `CHANGELOG.md`.
 
 ## Chrome Web Store (optional)
 

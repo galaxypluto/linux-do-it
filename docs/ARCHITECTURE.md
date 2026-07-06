@@ -1,6 +1,6 @@
 # Architecture
 
-Linux Do It follows the shared [chrome-extension-workspace](https://github.com/your-org/Chrome-EXE/tree/master/.agents/skills/chrome-extension-workspace) layering.
+Linux Do It follows the layering described in [`.agents/skills/chrome-extension-workspace/SKILL.md`](../.agents/skills/chrome-extension-workspace/SKILL.md) and [`.trellis/spec/extension/`](../.trellis/spec/extension/index.md).
 
 ## Boundaries
 
@@ -40,8 +40,4 @@ Side panel
 
 ## Internal identifiers
 
-CSS classes use the `ldcv-` prefix and storage keys retain `linuxdo*` names for backward compatibility with earlier builds. These are implementation details, not user-facing branding.
-
-## Related package
-
-`linuxdo-reader` in the [Chrome-EXE](https://github.com/galaxypluto/Chrome-EXE) monorepo is the earlier baseline fork. **This repository is canonical** for Linux Do It. See [docs/RELATIONSHIP.md](./docs/RELATIONSHIP.md).
+Some CSS classes use the `ld-reader-*` prefix (Reader UI) and the `ldcv-*` prefix (`base-list.css`). Storage keys and DOM host ids may retain `linuxdo*` / `linuxdo-reader*` strings from earlier internal builds for backward compatibility. These are implementation details, not user-facing branding.

@@ -12,7 +12,7 @@ Use this checklist before release candidates, after native bridge changes, and a
 
 ## Local Commands
 
-From the workspace root:
+From the repository root. First-time setup: install Playwright Chromium (`pnpm exec playwright install chromium`) — see [DEVELOPMENT.md](./DEVELOPMENT.md).
 
 ```powershell
 pnpm typecheck

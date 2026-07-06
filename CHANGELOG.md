@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `docs/DEVELOPMENT.md` — fresh-clone setup, Playwright browser cache, CI vs local `pnpm check`, troubleshooting.
+
+### Changed
+
+- Contributor docs no longer reference Chrome-EXE / linuxdo-reader migration; removed `docs/RELATIONSHIP.md`.
+- `chrome-extension-workspace` skill aligned to single-repo layout at repository root.
+- Console warn prefix `[linux-do-it]`; spec and release doc paths corrected.
+
+### Removed
+
+- `scripts/publish-standalone-repo.ps1` (one-time monorepo extraction script).
+
 ## [1.0.0] - 2026-07-06
 
 First public release as an independent open-source Chrome extension.
@@ -22,7 +36,7 @@ First public release as an independent open-source Chrome extension.
 
 ### Changed
 
-- Public brand **Linux Do It** (evolved from internal `LD-reader-study`).
+- Public brand **Linux Do It**.
 - Canonical repository: [galaxypluto/linux-do-it](https://github.com/galaxypluto/linux-do-it).
 
 [Unreleased]: https://github.com/galaxypluto/linux-do-it/compare/v1.0.0...HEAD

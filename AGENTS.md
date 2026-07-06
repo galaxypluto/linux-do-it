@@ -23,7 +23,7 @@ Domain and application logic must not import `chrome.*`, `window`, `document`, o
 
 ## Local Extension Dev Profile
 
-For Linux.do logged-in/manual QA, use the repository-local Chrome development profile:
+For Linux.do logged-in/manual QA, use the repository-local Chrome development profile. Full toolchain and Playwright setup: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
 
 ```txt
 Profile:   .profiles/manual-linux-do-it-qa

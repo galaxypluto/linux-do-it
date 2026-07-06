@@ -5,8 +5,10 @@ Canonical repository: **https://github.com/galaxypluto/linux-do-it**
 ## Prerequisites
 
 - Node.js 22 LTS (or current LTS)
-- pnpm 9+
+- pnpm 9+ (`corepack enable` recommended; version pinned in `package.json`)
 - PowerShell 7 on Windows (optional; scripts are `.ps1`)
+
+Full environment details (Playwright browsers, manual QA profiles, CI vs local checks): **[docs/DEVELOPMENT.md](./docs/DEVELOPMENT.md)**.
 
 ## Setup
 
@@ -14,6 +16,8 @@ Canonical repository: **https://github.com/galaxypluto/linux-do-it**
 pnpm install
 pnpm exec playwright install chromium
 ```
+
+`pnpm install` alone is not enough for `pnpm check`: Playwright downloads Chromium into a **machine-local cache** (not the repo). Fresh clones must run the install step above unless you already have a matching `ms-playwright/chromium-*` build from another project.
 
 ## Development
 
@@ -34,7 +38,7 @@ pwsh -File scripts/start-agent-chrome.ps1
 pnpm check
 ```
 
-Runs typecheck, unit tests, production build (with icon generation), and Playwright E2E.
+Runs typecheck, unit tests, production build (with icon generation), and Playwright E2E. GitHub Actions CI currently runs typecheck, test, and build only — see [docs/DEVELOPMENT.md](./docs/DEVELOPMENT.md#ci-vs-local-pnpm-check).
 
 ## Icons
 
