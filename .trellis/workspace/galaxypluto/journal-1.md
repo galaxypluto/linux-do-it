@@ -43,3 +43,38 @@ Bootstrapped Trellis and agent dev environment, added DEVELOPMENT.md, removed Ch
 ### Next Steps
 
 - None - task complete
+
+
+## Session 2: Spec alignment: docs, dead code, extension E2E
+
+**Date**: 2026-07-06
+**Task**: Spec alignment: docs, dead code, extension E2E
+**Branch**: `main`
+
+### Summary
+
+Aligned Trellis spec with shadow DOM and layer map; removed cardViewApp; added extension Playwright smoke; pnpm check green.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `fffefd4` | (see git log) |
+| `8941670` | (see git log) |
+| `f31e345` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

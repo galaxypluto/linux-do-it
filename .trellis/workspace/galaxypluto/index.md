@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 1
+- **Total Sessions**: 2
 - **Last Active**: 2026-07-06
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~45 | Active |
+| `journal-1.md` | ~80 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 2 | 2026-07-06 | Spec alignment: docs, dead code, extension E2E | `fffefd4`, `8941670`, `f31e345` | `main` |
 | 1 | 2026-07-06 | Post-migration baseline and repo decoupling | `7ea3198`, `b971ed3`, `a524785`, `a79e933`, `16e1912`, `431a51a` | `main` |
 <!-- @@@/auto:session-history -->
 
