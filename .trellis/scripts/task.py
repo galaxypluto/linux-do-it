@@ -50,6 +50,7 @@ from common.tasks import iter_active_tasks, children_progress
 from common.task_store import (
     cmd_create,
     cmd_archive,
+    cmd_prune_ghosts,
     cmd_set_branch,
     cmd_set_base_branch,
     cmd_set_scope,
@@ -317,6 +318,7 @@ Usage:
   python task.py set-base-branch <dir> <branch>     Set PR target branch
   python task.py set-scope <dir> <scope>            Set scope for PR title
   python task.py archive <task-dir>                 Archive completed task
+  python task.py prune-ghosts                       Remove active dirs duplicated in archive/
   python task.py add-subtask <parent> <child>       Link child task to parent
   python task.py remove-subtask <parent> <child>    Unlink child from parent
   python task.py list [--mine] [--status <status>]  List tasks
@@ -465,6 +467,11 @@ def main() -> int:
     p_listarch = subparsers.add_parser("list-archive", help="List archived tasks")
     p_listarch.add_argument("month", nargs="?", help="Month (YYYY-MM)")
 
+    subparsers.add_parser(
+        "prune-ghosts",
+        help="Remove active task dirs that duplicate archived tasks",
+    )
+
     args = parser.parse_args()
 
     if not args.command:
@@ -483,6 +490,7 @@ def main() -> int:
         "set-base-branch": cmd_set_base_branch,
         "set-scope": cmd_set_scope,
         "archive": cmd_archive,
+        "prune-ghosts": cmd_prune_ghosts,
         "add-subtask": cmd_add_subtask,
         "remove-subtask": cmd_remove_subtask,
         "list": cmd_list,

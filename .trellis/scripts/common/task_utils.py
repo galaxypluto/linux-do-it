@@ -7,6 +7,8 @@ Provides:
     find_task_by_name   - Find task directory by name
     resolve_task_dir    - Resolve task directory from name, relative, or absolute path
     archive_task_dir    - Archive task to monthly directory
+    remove_leftover_task_source_dir - Delete ghost source dir after archive
+    prune_archived_task_ghosts - Scan and remove archived task duplicates
     run_task_hooks      - Run lifecycle hooks for task events
 """
 
@@ -17,7 +19,8 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-from .paths import get_repo_root, get_tasks_dir
+from .paths import DIR_ARCHIVE, get_repo_root, get_tasks_dir
+from .log import Colors, colored
 
 
 # =============================================================================
@@ -140,7 +143,72 @@ def archive_task_dir(task_dir_abs: Path, repo_root: Path | None = None) -> Path 
         print(f"Error: Failed to move task to archive: {e}", file=sys.stderr)
         return None
 
+    remove_leftover_task_source_dir(task_dir_abs, dest)
     return dest
+
+
+def remove_leftover_task_source_dir(source_dir: Path, archive_dest: Path) -> bool:
+    """Remove an active task directory left behind after archive.
+
+    On Windows, ``shutil.move`` can leave a duplicate tree when files are open
+    in an editor, or buffers are saved to the pre-move path after the move.
+    When ``archive_dest`` exists, any sibling ``source_dir`` is stale.
+    """
+    if not archive_dest.is_dir():
+        return False
+    if not source_dir.is_dir():
+        return False
+    try:
+        if source_dir.resolve() == archive_dest.resolve():
+            return False
+    except OSError:
+        return False
+
+    try:
+        shutil.rmtree(source_dir)
+    except OSError as e:
+        print(
+            colored(
+                f"Warning: could not remove leftover task source {source_dir.name}: {e}",
+                Colors.YELLOW,
+            ),
+            file=sys.stderr,
+        )
+        return False
+
+    print(
+        colored(
+            f"Removed leftover task source after archive: {source_dir.name}",
+            Colors.YELLOW,
+        ),
+        file=sys.stderr,
+    )
+    return True
+
+
+def prune_archived_task_ghosts(repo_root: Path | None = None) -> list[str]:
+    """Remove active task dirs that duplicate archived tasks."""
+    if repo_root is None:
+        repo_root = get_repo_root()
+
+    tasks_dir = get_tasks_dir(repo_root)
+    archive_root = tasks_dir / DIR_ARCHIVE
+    if not archive_root.is_dir():
+        return []
+
+    archived: dict[str, Path] = {}
+    for month_dir in sorted(archive_root.iterdir()):
+        if not month_dir.is_dir():
+            continue
+        for task_dir in sorted(month_dir.iterdir()):
+            if task_dir.is_dir():
+                archived[task_dir.name] = task_dir
+
+    removed: list[str] = []
+    for name, archive_dest in archived.items():
+        if remove_leftover_task_source_dir(tasks_dir / name, archive_dest):
+            removed.append(name)
+    return removed
 
 
 def archive_task_complete(

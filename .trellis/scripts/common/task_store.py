@@ -50,6 +50,8 @@ from .safe_commit import (
 from .task_utils import (
     archive_task_complete,
     find_task_by_name,
+    prune_archived_task_ghosts,
+    remove_leftover_task_source_dir,
     resolve_task_dir,
     run_task_hooks,
 )
@@ -441,9 +443,14 @@ def cmd_archive(args: argparse.Namespace) -> int:
         year_month = archive_dest.parent.name
         print(colored(f"Archived: {dir_name} -> archive/{year_month}/", Colors.GREEN), file=sys.stderr)
 
+        # Editors on Windows may recreate the source path after shutil.move.
+        remove_leftover_task_source_dir(task_dir, archive_dest)
+
         # Auto-commit unless --no-commit
         if not getattr(args, "no_commit", False):
-            if not _auto_commit_archive(dir_name, repo_root, modified_children):
+            if not _auto_commit_archive(
+                dir_name, repo_root, modified_children, archive_dest=archive_dest
+            ):
                 print(
                     colored(
                         "Archive moved on disk, but git auto-commit did not complete. "
@@ -460,6 +467,14 @@ def cmd_archive(args: argparse.Namespace) -> int:
         # Run hooks with the archived path
         archived_json = archive_dest / FILE_TASK_JSON
         run_task_hooks("after_archive", archived_json, repo_root)
+
+        pruned = prune_archived_task_ghosts(repo_root)
+        for name in pruned:
+            if name != dir_name:
+                print(
+                    colored(f"Pruned archived task ghost: {name}", Colors.YELLOW),
+                    file=sys.stderr,
+                )
         return 0
 
     return 1
@@ -469,6 +484,7 @@ def _auto_commit_archive(
     task_name: str,
     repo_root: Path,
     modified_children: list[str] | None = None,
+    archive_dest: Path | None = None,
 ) -> bool:
     """Stage Trellis-owned task paths and commit after archive.
 
@@ -492,6 +508,10 @@ def _auto_commit_archive(
             file=sys.stderr,
         )
         return True
+
+    if archive_dest is not None:
+        source_abs = repo_root / DIR_WORKFLOW / DIR_TASKS / task_name
+        remove_leftover_task_source_dir(source_abs, archive_dest)
 
     source_rel = f"{DIR_WORKFLOW}/{DIR_TASKS}/{task_name}"
     rc, tracked_out, _ = run_git(
@@ -548,6 +568,20 @@ def _auto_commit_archive(
     else:
         print(f"[WARN] Auto-commit failed: {err.strip()}", file=sys.stderr)
         return not source_was_tracked
+
+
+def cmd_prune_ghosts(_args: argparse.Namespace) -> int:
+    """Remove active task directories that duplicate archived tasks."""
+    repo_root = get_repo_root()
+    removed = prune_archived_task_ghosts(repo_root)
+    if not removed:
+        print(colored("No archived task ghosts found.", Colors.GREEN), file=sys.stderr)
+        return 0
+
+    print(colored(f"Pruned {len(removed)} archived task ghost(s):", Colors.GREEN), file=sys.stderr)
+    for name in removed:
+        print(f"  - {name}/", file=sys.stderr)
+    return 0
 
 
 # =============================================================================
