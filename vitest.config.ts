@@ -9,5 +9,7 @@ export default defineConfig({
       },
     },
     include: ['tests/**/*.test.ts'],
+    setupFiles: ['./tests/setup-dom.ts'],
+    teardownTimeout: 10_000,
   },
 });
