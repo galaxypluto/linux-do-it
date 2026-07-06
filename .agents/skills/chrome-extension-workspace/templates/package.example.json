@@ -1,0 +1,35 @@
+{
+  "name": "my-chrome-extension",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "wxt",
+    "build": "wxt build",
+    "zip": "wxt zip",
+    "prepare:wxt": "wxt prepare",
+    "typecheck": "wxt prepare && tsc --noEmit",
+    "test": "wxt prepare && vitest run",
+    "test:watch": "vitest",
+    "e2e": "playwright test",
+    "e2e:headed": "playwright test --headed",
+    "check": "pnpm typecheck && pnpm test && pnpm build && pnpm e2e"
+  },
+  "dependencies": {
+    "@wxt-dev/module-react": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "zod": "latest"
+  },
+  "devDependencies": {
+    "@playwright/test": "latest",
+    "@types/chrome": "latest",
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "jsdom": "latest",
+    "typescript": "latest",
+    "vitest": "latest",
+    "wxt": "latest"
+  }
+}
