@@ -192,8 +192,9 @@ describe("reader template states", () => {
     expect(doc.querySelector("h2")?.innerHTML).toBe("Title &lt;unsafe&gt;");
     expect(doc.querySelector(".ldcv-reader-author__name")?.getAttribute("href")).toBe("/u/alice");
     expect(doc.querySelector(".ldcv-reader-author__name")?.innerHTML).toContain("Alice &lt;Admin&gt;");
-    expect(doc.querySelector(".ldcv-reader-open")?.textContent).toBe("原贴");
-    expect(doc.querySelector(".ldcv-reader-primary-actions .ldcv-reader-open--primary")?.textContent).toBe("原贴");
+    expect(doc.querySelector(".ldcv-reader-open")?.getAttribute("aria-label")).toBe("原贴");
+    expect(doc.querySelector(".ldcv-reader-open--icon .ldcv-reader-open__icon")).not.toBeNull();
+    expect(doc.querySelector(".ldcv-reader-primary-actions .ldcv-reader-open--primary")?.getAttribute("aria-label")).toBe("原贴");
     expect(doc.querySelector(".ldcv-reader-primary-actions .ldcv-reader-open--primary")?.getAttribute("href")).toBe("/t/topic/1");
     expect(doc.querySelector(".ldcv-reader-primary-actions [data-reader-post-action='reply']")?.getAttribute("aria-label")).toBe("开始撰写对此帖子的回复");
     expect(doc.querySelector(".ldcv-reader-main-actions [data-reader-post-action='like']")?.getAttribute("aria-pressed")).toBe("false");

@@ -753,7 +753,7 @@ describe("reader native post actions", () => {
       })
     );
 
-    root.querySelector<HTMLButtonElement>(".ldcv-reader-primary-actions [data-reader-post-action='reply']")?.click();
+    root.querySelector<HTMLButtonElement>(".ldcv-reader-main-actions [data-reader-post-action='reply']")?.click();
     root.querySelector<HTMLButtonElement>(".ldcv-reader-main-actions [data-reader-post-action='bookmark']")?.click();
     root.querySelector<HTMLButtonElement>(".ldcv-reader-comment [data-reader-post-action='reply']")?.click();
 

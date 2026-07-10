@@ -7,7 +7,7 @@ export const NATIVE_POST_ACTION_RESULT_EVENT = 'linuxdo-card-view:native-post-ac
 export const TOPIC_VIEW_TRACK_EVENT = 'linuxdo-card-view:track-topic-view';
 export const TOPIC_VIEW_TRACK_RESULT_EVENT = 'linuxdo-card-view:track-topic-view-result';
 
-export type NativePostAction = 'reply' | 'like' | 'bookmark';
+export type NativePostAction = 'reply' | 'like' | 'bookmark' | 'flag';
 export type NativePostActionStatus = 'success' | 'opened' | 'unsupported' | 'error' | 'timeout';
 
 export type NativePostActionRequest = {

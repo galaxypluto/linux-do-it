@@ -33,3 +33,204 @@
       0 0 0 1px color-mix(in srgb, var(--accent) 16%, transparent);
   }
 }
+
+/* Boost Rich Text Alignment & Styling */
+.ldcv-reader-boost-text p {
+  margin: 0 !important;
+  display: inline !important;
+}
+
+/* 修复 Boost 文本中 emoji 的尺寸与对齐 */
+.ldcv-reader-boost-text img.emoji {
+  width: 14px !important;
+  height: 14px !important;
+  vertical-align: -2px !important;
+  display: inline-block !important;
+  margin: 0 2px !important;
+}
+
+/* 评论区空状态 Boost：去掉圆形容器，对齐点赞/回复图标按钮（不影响 BoostList 非空火箭） */
+.ldcv-reader-boost-ghost-btn {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.ldcv-reader-boost-ghost-btn:hover {
+  transform: none !important;
+}
+
+.ldcv-reader-boost-ghost-btn svg {
+  fill: currentColor !important;
+  stroke: none !important;
+  width: 20px !important;
+  height: 20px !important;
+}
+
+/* BoostList 非空态火箭：保留圆形容器样式 */
+.ldcv-reader-boost-add-btn {
+  background-color: var(--primary-low, rgba(128, 128, 128, 0.12)) !important;
+  border: 1px solid var(--primary-low, rgba(128, 128, 128, 0.15)) !important;
+  color: var(--primary-medium, #808080) !important;
+  transition: all 0.2s ease !important;
+}
+
+.ldcv-reader-boost-add-btn:hover {
+  background-color: color-mix(in srgb, var(--accent) 10%, transparent) !important;
+  color: var(--accent) !important;
+  transform: scale(1.05) !important;
+}
+
+.ldcv-reader-boost-add-btn:active {
+  transform: scale(0.95) !important;
+}
+
+/* 抵御外部全局 CSS 污染，强效保护线描 SVG (笑脸、对勾、叉号) */
+.ldcv-reader-boost-popover-btn svg {
+  fill: none !important;
+  stroke: currentColor !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* 让 Boost 触发按钮的 SVG 继承自身的 fill，因为现在换成了实心图标 */
+.ldcv-reader-boost-add-btn svg {
+  fill: currentColor !important;
+  stroke: none !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* 确保 Boost 悬浮输入框的图标颜色在各处统一 (Emoji和叉号为活跃颜色，✓在不可点击时为灰色) */
+.ldcv-reader-boost-popover-btn {
+  color: var(--primary, #000000) !important;
+}
+
+.ldcv-reader-boost-popover-btn:disabled,
+.ldcv-reader-boost-popover-btn[disabled] {
+  color: var(--muted, #9ca3af) !important;
+}
+
+/* 强力夺回 Boost 药丸与火箭按钮的 margin 留白，防止被外部论坛样式清除 */
+.ldcv-reader-boost-item {
+  margin: 4px !important;
+}
+
+/* 气泡药丸的 hover 选中背景变色防污染样式 */
+.ldcv-reader-boost-bubble-btn {
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.ldcv-reader-boost-bubble-btn:hover {
+  background-color: color-mix(in srgb, var(--accent) 10%, transparent) !important;
+  border-color: color-mix(in srgb, var(--accent) 15%, transparent) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* 顶部主贴工具栏：默认透明底 + 灰色图标，hover 再上强调色 */
+.ldcv-reader-title-actions .ldcv-reader-action-button,
+.ldcv-reader-title-actions .ldcv-reader-open--primary {
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  min-height: 36px !important;
+  border-radius: 7px !important;
+  background: transparent !important;
+  border: 1px solid color-mix(in srgb, var(--text) 14%, transparent) !important;
+  color: var(--muted, #9ca3af) !important;
+  padding: 0 !important;
+}
+
+.ldcv-reader-title-actions .ldcv-reader-action-button:hover,
+.ldcv-reader-title-actions .ldcv-reader-open:hover {
+  color: var(--accent) !important;
+  background: transparent !important;
+  border-color: color-mix(in srgb, var(--accent) 38%, transparent) !important;
+}
+
+.ldcv-reader-title-actions .ldcv-reader-open--icon {
+  width: 36px !important;
+  min-width: 36px !important;
+  height: 36px !important;
+  padding: 0 !important;
+}
+
+.ldcv-reader-title-actions .ldcv-reader-open__icon svg {
+  fill: none !important;
+  stroke: currentColor !important;
+  width: 18px !important;
+  height: 18px !important;
+}
+
+.ldcv-reader-title-actions .ldcv-reader-action-button--like.is-active {
+  border-color: color-mix(in srgb, var(--color-like) 42%, transparent) !important;
+  color: var(--color-like) !important;
+  background: transparent !important;
+}
+
+.ldcv-reader-title-actions .ldcv-reader-action-button--bookmark.is-active {
+  border-color: color-mix(in srgb, var(--accent) 44%, transparent) !important;
+  color: var(--accent) !important;
+  background: transparent !important;
+}
+
+/* 主贴工具栏内的 Boost：与其它操作按钮同形同色（不影响 BoostList 圆形火箭） */
+.ldcv-reader-main-actions .ldcv-reader-boost-add-btn {
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  min-height: 36px !important;
+  border-radius: 7px !important;
+  background: transparent !important;
+  border: 1px solid color-mix(in srgb, var(--text) 14%, transparent) !important;
+  color: var(--muted, #9ca3af) !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.ldcv-reader-main-actions .ldcv-reader-boost-add-btn:hover {
+  background: transparent !important;
+  border-color: color-mix(in srgb, var(--accent) 38%, transparent) !important;
+  color: var(--accent) !important;
+  transform: none !important;
+}
+
+.ldcv-reader-main-actions .ldcv-reader-boost-add-btn:active {
+  transform: none !important;
+}
+
+.ldcv-reader-main-actions .ldcv-reader-boost-add-btn svg {
+  width: 18px !important;
+  height: 18px !important;
+  fill: currentColor !important;
+  stroke: none !important;
+}
+
+.ldcv-reader-main-actions__boost {
+  display: inline-flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+}
+
+/* Boost 气泡删除菜单：走 ldcv 语义色，避免硬编码白/深色底 */
+.ldcv-reader-boost-menu {
+  background: var(--surface, var(--secondary, #fff)) !important;
+  border: 1px solid color-mix(in srgb, var(--text, var(--primary)) 12%, transparent) !important;
+  box-shadow: 0 10px 28px color-mix(in srgb, var(--text, #000) 12%, transparent) !important;
+}
+
+.ldcv-reader-boost-menu__delete {
+  color: var(--color-like, #e11d48) !important;
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
+}
+
+.ldcv-reader-boost-menu__delete:hover {
+  background: color-mix(in srgb, var(--color-like, #e11d48) 10%, transparent) !important;
+}
+
+
+
+

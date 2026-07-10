@@ -36,6 +36,8 @@ export interface DiscoursePostResponse {
   bookmarked?: unknown;
   bookmark_id?: unknown;
   can_bookmark?: unknown;
+  boosts?: any[];
+  can_boost?: unknown;
 }
 
 export interface ReaderPollResultOption {
@@ -203,6 +205,14 @@ export interface TopicReaderAuthor {
   avatarUrl: string;
 }
 
+export interface TopicReaderBoost {
+  id: number | string;
+  cooked: string;
+  user: TopicReaderAuthor;
+  /** null 表示 topic JSON 未带权限，需按需拉取 */
+  canDelete: boolean | null;
+}
+
 export interface TopicReaderPost {
   id: number;
   postNumber: number;
@@ -221,10 +231,12 @@ export interface TopicReaderPost {
     liked: boolean | null;
     canBookmark: boolean | null;
     bookmarked: boolean | null;
+    canBoost: boolean;
   };
   url: string;
   isOriginalPost: boolean;
   isOriginalPoster: boolean;
+  boosts: TopicReaderBoost[];
 }
 
 export interface TopicReplyNode {

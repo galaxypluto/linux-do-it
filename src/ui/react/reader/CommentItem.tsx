@@ -12,6 +12,7 @@ import { escapeAttribute } from "../../html";
 import { AuthorHeader } from "../components/AuthorHeader";
 import { PostAction } from "../components/PostAction";
 import { PostContent, type ReaderImageViewerState } from "../components/PostContent";
+import { BoostToolbarAction } from "../components/BoostToolbarAction";
 
 type CommentItemProps = {
   post: TopicReaderPost;
@@ -29,6 +30,7 @@ type CommentItemProps = {
   onNativePostAction?: (action: ReaderPostAction, postNumber: number) => void;
   onOpenReaderImage?: (image: ReaderImageViewerState, origin: DOMRect) => void;
   topicUrlView?: TopicUrlView;
+  onBoostAdded?: () => void;
 };
 
 export function CommentItem({
@@ -46,7 +48,8 @@ export function CommentItem({
   onCloseUserPreview,
   onNativePostAction,
   onOpenReaderImage,
-  topicUrlView = "classic"
+  topicUrlView = "classic",
+  onBoostAdded
 }: CommentItemProps): React.ReactElement {
   // Expand/collapse is owned by root-level event delegation
   // (bindReaderToggleCommentDelegation in render.ts), which toggles the
@@ -59,6 +62,7 @@ export function CommentItem({
   );
 
   const [animating, setAnimating] = React.useState(shouldAnimate);
+  const [boostEditorOpen, setBoostEditorOpen] = React.useState(false);
 
   React.useEffect(() => {
     if (!shouldAnimate) {
@@ -131,36 +135,59 @@ export function CommentItem({
             />
           </div>
 
-          <div className="ldcv-reader-comment__tools">
-            <PostAction action="like" post={post} actionFeedback={actionFeedback} onAction={onNativePostAction} />
-            <PostAction action="reply" post={post} actionFeedback={actionFeedback} onAction={onNativePostAction} />
+          <div className="ldcv-reader-comment__tools flex items-center justify-end gap-4 sm:gap-6">
+            {/* Metadata Group */}
+            <div className="flex items-center gap-3 text-xs text-gray-500/80">
+              {isFresh && <span className="ldcv-reader-new-badge" title="本次刷新新增">new</span>}
+              {post.stats.likes > 0 && (
+                <span className="flex items-center gap-1">
+                  <span dangerouslySetInnerHTML={{ __html: icons.heart }} className="w-3 h-3 flex items-center justify-center [&>svg]:w-3 [&>svg]:h-3" />
+                  {compactNumber(post.stats.likes)}
+                </span>
+              )}
+              <a
+                href={escapeAttribute(preferredTopicUrl(post.url, topicUrlView))}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-gray-700 transition-colors"
+              >
+                #{post.postNumber}
+              </a>
+            </div>
 
-            <a
-              href={escapeAttribute(preferredTopicUrl(post.url, topicUrlView))}
-              target="_blank"
-              rel="noopener noreferrer"
+            {/* Actions Group with Progressive Disclosure；Boost 编辑器打开时强制全显，避免胶囊被 opacity 压暗 */}
+            <div
+              className={cn(
+                "flex items-center gap-1 transition-opacity duration-300",
+                boostEditorOpen ? "opacity-100" : "opacity-60 hover:opacity-100"
+              )}
             >
-              #{post.postNumber}
-            </a>
+              {(!post.boosts || post.boosts.length === 0) && post.actions?.canBoost === true && (
+                <BoostToolbarAction
+                  postId={post.id}
+                  onBoostAdded={onBoostAdded}
+                  variant="ghost"
+                  onOpenChange={setBoostEditorOpen}
+                />
+              )}
+              <PostAction action="like" post={post} actionFeedback={actionFeedback} onAction={onNativePostAction} />
+              <PostAction action="reply" post={post} actionFeedback={actionFeedback} onAction={onNativePostAction} />
+              <PostAction action="flag" post={post} actionFeedback={actionFeedback} onAction={onNativePostAction} />
 
-            {isFresh && <span className="ldcv-reader-new-badge" title="本次刷新新增">new</span>}
-
-            {post.stats.likes > 0 && (
-              <span>
-                <span dangerouslySetInnerHTML={{ __html: icons.heart }} />
-                {compactNumber(post.stats.likes)}
-              </span>
-            )}
-
-            <button
-              type="button"
-              className="ldcv-reader-comment__toggle"
-              data-action="toggle-comment"
-              title={initialExpanded ? "收起评论" : "展开评论"}
-              aria-label={initialExpanded ? "收起评论" : "展开评论"}
-              aria-expanded={initialExpanded}
-              dangerouslySetInnerHTML={{ __html: icons.chevronDown }}
-            />
+              <button
+                type="button"
+                className={cn(
+                  "ldcv-reader-comment__toggle flex items-center justify-center w-7 h-7 rounded-full transition-all duration-200 cursor-pointer !bg-transparent !p-0 !min-h-0 !border-none",
+                  "hover:bg-gray-100/80 dark:hover:bg-white/10 active:scale-95 text-gray-500 hover:text-gray-700"
+                )}
+                data-action="toggle-comment"
+                title={initialExpanded ? "收起评论" : "展开评论"}
+                aria-label={initialExpanded ? "收起评论" : "展开评论"}
+                aria-expanded={initialExpanded}
+              >
+                <span className="w-4 h-4 flex items-center justify-center [&>svg]:w-4 [&>svg]:h-4" dangerouslySetInnerHTML={{ __html: icons.chevronDown }} />
+              </button>
+            </div>
           </div>
         </header>
 

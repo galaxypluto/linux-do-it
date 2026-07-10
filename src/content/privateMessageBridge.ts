@@ -15,7 +15,7 @@ export interface PrivateMessageRequest {
   replaceExisting: boolean;
 }
 
-export type NativePostAction = "reply" | "like" | "bookmark";
+export type NativePostAction = "reply" | "like" | "bookmark" | "flag";
 export type NativePostActionStatus = "success" | "opened" | "unsupported" | "error" | "timeout";
 
 export interface NativePostActionRequest {

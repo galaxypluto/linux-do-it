@@ -2,14 +2,13 @@ import * as React from "react";
 import type { TopicCardData, TopicReaderPost } from "../../../discourse/types";
 import type { ReaderState, ReaderPostAction } from "../../readerTypes";
 import type { ReaderTemplateSettings } from "../../readerTemplates";
-import { readerLoaderTemplate } from "../../readerTemplates";
+import { postActionFeedbackTemplate, preferredTopicUrl, readerLoaderTemplate } from "../../readerTemplates";
 import { TopicHeader } from "./TopicHeader";
 import { CommentList } from "./CommentList";
 import { PostContent, type ReaderImageViewerState } from "../components/PostContent";
 import { ReaderLoadMore } from "../components/ReaderLoadMore";
 import { IncompleteNotice } from "../components/IncompleteNotice";
 import { escapeAttribute, escapeHtml } from "../../html";
-import { preferredTopicUrl } from "../../readerTemplates";
 import { sortReplyNodes } from "../../replies";
 import {
   READER_AUTO_LOAD_MIN_SCROLL_TOP,
@@ -384,6 +383,10 @@ export function ReaderContent({
     }
   };
 
+  const handlePostAction = React.useCallback((action: ReaderPostAction, postNumber: number) => {
+    onNativePostAction?.(action, postNumber);
+  }, [onNativePostAction]);
+
   return (
     <article className="ldcv-reader-article" data-reader-variant={variant} data-reader-topic-id={data.id}>
       <TopicHeader
@@ -397,7 +400,7 @@ export function ReaderContent({
         onCloseUserPreview={onCloseUserPreview}
         onRefreshReader={onRefreshReader}
         onReaderAdjacent={onReaderAdjacent}
-        onNativePostAction={onNativePostAction}
+        onNativePostAction={handlePostAction}
       />
 
       <div className="ldcv-reader-scroll-wrapper" style={{ position: 'relative', flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
@@ -407,7 +410,17 @@ export function ReaderContent({
               <div className="ldcv-reader-post__toolbar">
                 <span>主贴</span>
               </div>
-              <PostContent post={mainPost} onOpenReaderImage={onOpenReaderImage} />
+              {reader.nativePostAction?.postNumber === mainPost.postNumber ? (
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: postActionFeedbackTemplate(reader.nativePostAction, mainPost.postNumber)
+                  }}
+                />
+              ) : null}
+              <PostContent 
+                post={mainPost} 
+                onOpenReaderImage={onOpenReaderImage} 
+              />
             </div>
           ) : null}
 
@@ -432,8 +445,9 @@ export function ReaderContent({
             scrollElement={scrollElement}
             onOpenUserPreview={onOpenUserPreview}
             onCloseUserPreview={onCloseUserPreview}
-            onNativePostAction={onNativePostAction}
+            onNativePostAction={handlePostAction}
             onOpenReaderImage={onOpenReaderImage}
+            onBoostAdded={() => onRefreshReader?.()}
           />
 
           {/* Auto-load sentinel: when this enters the viewport and there are

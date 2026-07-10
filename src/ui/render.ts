@@ -3228,7 +3228,7 @@ function normalizeCommentSortOrder(value: string | undefined): CommentSortOrder 
 }
 
 function normalizeReaderPostAction(value: string | undefined): ReaderPostAction | null {
-  if (value === "reply" || value === "like" || value === "bookmark") {
+  if (value === "reply" || value === "like" || value === "bookmark" || value === "flag") {
     return value;
   }
   return null;

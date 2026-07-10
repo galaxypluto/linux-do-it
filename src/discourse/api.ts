@@ -15,6 +15,7 @@ import type {
   TopicReaderAuthor,
   TopicReaderData,
   TopicReaderPost,
+  TopicReaderBoost,
   TopicReplyNode
 } from "./types";
 
@@ -22,7 +23,7 @@ const JSON_HEADERS = {
   Accept: "application/json"
 };
 const READER_CACHE_TTL_MS = 30 * 60 * 1000;
-const READER_CACHE_VERSION = 15;
+const READER_CACHE_VERSION = 16;
 const USER_PROFILE_CACHE_TTL_MS = 30 * 60 * 1000;
 const USER_PROFILE_CACHE_VERSION = 1;
 const READER_READ_TIMING_MS_PER_POST = 1000;
@@ -561,10 +562,32 @@ function normalizeReaderPosts(
         actions: normalizePostActions(post, postId, postNumber, context),
         url: postUrl,
         isOriginalPost: postNumber === 1,
-        isOriginalPoster: postNumber === 1
+        isOriginalPoster: postNumber === 1,
+        boosts: normalizeBoosts(post.boosts, context)
       };
     })
     .filter((post) => post.html || post.isOriginalPost);
+}
+
+function normalizeBoosts(rawBoosts: any[] | undefined, context: ReaderPostContext): TopicReaderBoost[] {
+  if (!Array.isArray(rawBoosts)) {
+    return [];
+  }
+  return rawBoosts.map((boost, index) => {
+    const isFallback = !boost.user?.id || boost.user?.id === context.fallbackAuthor?.id;
+    const boostId = boost.id ?? `boost-${index}`;
+    return {
+      id: boostId,
+      cooked: sanitizeCookedHtml(textValue(boost.cooked), { postId: 0, polls: [] }),
+      user: {
+        id: nullableNumber(boost.user?.id) || context.fallbackAuthor?.id || null,
+        username: typeof boost.user?.username === "string" ? boost.user.username : (isFallback ? context.fallbackAuthor?.username || "" : ""),
+        name: typeof boost.user?.name === "string" ? boost.user.name : (isFallback ? context.fallbackAuthor?.name || "" : ""),
+        avatarUrl: typeof boost.user?.avatar_template === "string" ? avatarUrl(boost.user.avatar_template, "") : avatarUrl(undefined, isFallback ? context.fallbackAuthor?.avatarUrl || "" : "")
+      },
+      canDelete: confirmedBoolean(boost.can_delete)
+    };
+  });
 }
 
 function normalizePostActions(
@@ -595,7 +618,8 @@ function normalizePostActions(
     canLike,
     liked,
     canBookmark,
-    bookmarked
+    bookmarked,
+    canBoost: confirmedBoolean(post.can_boost) ?? false
   };
 }
 
@@ -1092,3 +1116,99 @@ function safeSessionRemove(key: string): void {
     // Ignore storage failures; the next fetch can rebuild reader data.
   }
 }
+
+export async function createBoost(postId: number, raw: string, signal?: AbortSignal): Promise<TopicReaderBoost> {
+  const csrfToken = await discourseCsrfToken(signal);
+  if (!csrfToken) {
+    throw new Error("Unable to obtain CSRF token for boost creation");
+  }
+
+  const response = await pacedDiscourseFetch(`/discourse-boosts/posts/${postId}/boosts`, {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      ...JSON_HEADERS,
+      "Content-Type": "application/json",
+      "X-Requested-With": "XMLHttpRequest",
+      "X-CSRF-Token": csrfToken
+    },
+    body: JSON.stringify({ raw }),
+    signal
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to create boost: ${response.status}`);
+  }
+
+  const payload = await response.json();
+  const normalized = normalizeBoosts([payload], {
+    topicUrl: "",
+    fallbackCreatedAt: "",
+    fallbackAuthor: null,
+    canReply: null,
+    bookmarkedPostIds: new Set(),
+    bookmarkedPostNumbers: new Set(),
+    topicBookmarked: null
+  });
+  const boost = normalized[0];
+  if (!boost) {
+    throw new Error("Failed to normalize boost payload");
+  }
+  return boost;
+}
+
+export async function deleteBoost(boostId: number | string, signal?: AbortSignal): Promise<void> {
+  const csrfToken = await discourseCsrfToken(signal);
+  if (!csrfToken) {
+    throw new Error("Unable to obtain CSRF token for boost deletion");
+  }
+
+  const response = await pacedDiscourseFetch(`/discourse-boosts/boosts/${boostId}`, {
+    method: "DELETE",
+    credentials: "include",
+    headers: {
+      ...JSON_HEADERS,
+      "X-Requested-With": "XMLHttpRequest",
+      "X-CSRF-Token": csrfToken
+    },
+    signal
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to delete boost: ${response.status}`);
+  }
+}
+
+/** 拉取单个 boost 的删除权限（topic JSON 常缺 can_delete） */
+export async function fetchBoost(boostId: number | string, signal?: AbortSignal): Promise<TopicReaderBoost> {
+  const response = await pacedDiscourseFetch(`/discourse-boosts/boosts/${boostId}`, {
+    method: "GET",
+    credentials: "include",
+    headers: {
+      ...JSON_HEADERS,
+      "X-Requested-With": "XMLHttpRequest"
+    },
+    signal
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch boost: ${response.status}`);
+  }
+
+  const payload = await response.json();
+  const normalized = normalizeBoosts([payload], {
+    topicUrl: "",
+    fallbackCreatedAt: "",
+    fallbackAuthor: null,
+    canReply: null,
+    bookmarkedPostIds: new Set(),
+    bookmarkedPostNumbers: new Set(),
+    topicBookmarked: null
+  });
+  const boost = normalized[0];
+  if (!boost) {
+    throw new Error("Failed to normalize boost payload");
+  }
+  return boost;
+}
+

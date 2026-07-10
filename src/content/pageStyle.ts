@@ -5,6 +5,8 @@ export const READER_SCROLL_LOCK_CLASS = "ldcv-reader-modal-open";
 export const PRIVATE_MESSAGE_LAYOUT_CLASS = "ldcv-private-message-compose";
 export const PRIVATE_MESSAGE_HOST_CLASS = "ldcv-private-message-compose-host";
 export const NATIVE_REPLY_ROOT_PRESERVING_CLASS = "ldcv-native-reply-root-preserving";
+/** 抬高 Discourse 原生 d-modal，使其盖过 Reader（举报 Flag 等） */
+export const NATIVE_MODAL_ELEVATE_CLASS = "ldcv-elevate-native-modal";
 
 export function ensurePageStyle(documentRef: Document = document): void {
   if (documentRef.getElementById(PAGE_STYLE_ID)) {
@@ -546,6 +548,28 @@ export function pageStyleText(): string {
     html.${PRIVATE_MESSAGE_LAYOUT_CLASS} .modal-outer-container,
     html.${PRIVATE_MESSAGE_LAYOUT_CLASS} body > [role="dialog"] {
       pointer-events: auto !important;
+      z-index: 2147483647 !important;
+    }
+
+    /* Reader 打开时抬高原生 Flag/登录等 d-modal，避免被 Reader 遮住 */
+    html.${NATIVE_MODAL_ELEVATE_CLASS} .modal-backdrop,
+    html.${NATIVE_MODAL_ELEVATE_CLASS} .d-modal-backdrop,
+    html.${NATIVE_MODAL_ELEVATE_CLASS} .d-modal__backdrop,
+    html.${NATIVE_MODAL_ELEVATE_CLASS} .dialog-overlay,
+    html.${NATIVE_MODAL_ELEVATE_CLASS} .dialog-backdrop,
+    html.${NATIVE_MODAL_ELEVATE_CLASS} .d-dialog-backdrop {
+      z-index: 2147483646 !important;
+    }
+
+    html.${NATIVE_MODAL_ELEVATE_CLASS} #discourse-modal,
+    html.${NATIVE_MODAL_ELEVATE_CLASS} .d-modal,
+    html.${NATIVE_MODAL_ELEVATE_CLASS} .d-modal__container,
+    html.${NATIVE_MODAL_ELEVATE_CLASS} .dialog-holder,
+    html.${NATIVE_MODAL_ELEVATE_CLASS} .dialog-container,
+    html.${NATIVE_MODAL_ELEVATE_CLASS} .modal,
+    html.${NATIVE_MODAL_ELEVATE_CLASS} .modal-container,
+    html.${NATIVE_MODAL_ELEVATE_CLASS} .modal-outer-container,
+    html.${NATIVE_MODAL_ELEVATE_CLASS} body > [role="dialog"] {
       z-index: 2147483647 !important;
     }
 

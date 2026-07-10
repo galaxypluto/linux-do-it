@@ -265,7 +265,77 @@
     if (action === "bookmark") {
       return runNativeBookmark(detail);
     }
+    if (action === "flag") {
+      return runNativeFlag(detail);
+    }
     return nativeOutcome(false, "unsupported", "不支持的帖子操作。", postUrlFromDetail(detail));
+  }
+
+  async function runNativeFlag(detail) {
+    const fallbackUrl = postUrlFromDetail(detail);
+    const modal = lookup("service:modal");
+    const currentUser = lookup("service:current-user");
+    const FlagModal = moduleDefault(requireModule("discourse/components/modal/flag"));
+    const PostFlag = moduleDefault(requireModule("discourse/lib/flag-targets/post-flag"));
+
+    if (!modal || !isCallable(modal, "show") || !FlagModal || !PostFlag) {
+      return nativeOutcome(false, "unsupported", "原生举报不可用，请在原贴中重试。", fallbackUrl);
+    }
+    if (!currentUser) {
+      return nativeOutcome(false, "unsupported", "请先登录后再举报。", fallbackUrl);
+    }
+
+    const topic = await findNativeTopic(detail);
+    const post = topic ? await findNativePost(topic, detail) : null;
+    if (!post) {
+      return nativeOutcome(false, "unsupported", "无法定位这条帖子的举报入口。", fallbackUrl);
+    }
+
+    try {
+      const flagTarget = typeof PostFlag === "function" ? new PostFlag() : PostFlag;
+      modal.show(FlagModal, {
+        model: {
+          flagTarget,
+          flagModel: post,
+          setHidden: () => {
+            if (isCallable(post, "set")) {
+              post.set("hidden", true);
+            }
+          }
+        }
+      });
+      elevateNativeModalUntilClosed();
+      return nativeOutcome(true, "opened", "已打开举报窗口。", fallbackUrl);
+    } catch {
+      return nativeOutcome(false, "error", "打开举报窗口失败，请在原贴中重试。", fallbackUrl);
+    }
+  }
+
+  function elevateNativeModalUntilClosed() {
+    const elevateClass = "ldcv-elevate-native-modal";
+    document.documentElement.classList.add(elevateClass);
+
+    const hasModal = () =>
+      Boolean(
+        document.querySelector(
+          ".d-modal, #discourse-modal, .d-modal__container, .dialog-holder, body > [role='dialog']"
+        )
+      );
+
+    // 等弹窗挂载后再开始监听关闭
+    window.setTimeout(() => {
+      if (!hasModal()) {
+        document.documentElement.classList.remove(elevateClass);
+        return;
+      }
+      const observer = new MutationObserver(() => {
+        if (!hasModal()) {
+          document.documentElement.classList.remove(elevateClass);
+          observer.disconnect();
+        }
+      });
+      observer.observe(document.body, { childList: true, subtree: true });
+    }, 50);
   }
 
   async function openNativeReply(detail) {

@@ -7,6 +7,7 @@ import { StatItem } from "../components/StatItem";
 import { icons } from "../../icons";
 import { readerNavigation, preferredTopicUrl } from "../../readerTemplates";
 import { PostAction } from "../components/PostAction";
+import { BoostToolbarAction } from "../components/BoostToolbarAction";
 import { UserPreview } from "../components/UserPreview";
 import { AuthorHeader } from "../components/AuthorHeader";
 import { ReaderNav } from "../components/ReaderNav";
@@ -191,17 +192,36 @@ export function TopicHeader({
           </div>
         </div>
         <div className="ldcv-reader-title-actions">
-          <div className="ldcv-reader-primary-actions">
-            {mainPost && <PostAction action="reply" post={mainPost} primary={true} actionFeedback={reader.nativePostAction} onAction={onNativePostAction} />}
-            <a className="ldcv-reader-open ldcv-reader-open--primary" href={preferredTopicUrl(data.url, settings.topicUrlView)} target="_blank" rel="noopener noreferrer">原贴</a>
-          </div>
           {mainPost && (
             <div className="ldcv-reader-main-actions" role="group" aria-label="主贴操作">
-              <PostAction action="like" post={mainPost} primary={true} actionFeedback={reader.nativePostAction} onAction={onNativePostAction} />
-              <PostAction action="bookmark" post={mainPost} primary={true} actionFeedback={reader.nativePostAction} onAction={onNativePostAction} />
-              <a className="ldcv-reader-main-actions__post-link" href={preferredTopicUrl(mainPost.url, settings.topicUrlView)} target="_blank" rel="noopener noreferrer">
-                #{mainPost.postNumber}
-              </a>
+              <div className="ldcv-reader-main-actions__row">
+                {(!mainPost.boosts || mainPost.boosts.length === 0) && mainPost.actions?.canBoost === true && (
+                  <BoostToolbarAction
+                    postId={mainPost.id}
+                    onBoostAdded={() => onRefreshReader?.()}
+                    className="ldcv-reader-main-actions__boost"
+                  />
+                )}
+                <PostAction action="bookmark" post={mainPost} primary={true} actionFeedback={reader.nativePostAction} onAction={onNativePostAction} />
+                <a
+                  className="ldcv-reader-open ldcv-reader-open--primary ldcv-reader-open--icon"
+                  href={preferredTopicUrl(data.url, settings.topicUrlView)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="原贴"
+                  aria-label="原贴"
+                >
+                  <span
+                    className="ldcv-reader-open__icon"
+                    dangerouslySetInnerHTML={{ __html: icons.fileText }}
+                  />
+                </a>
+              </div>
+              <div className="ldcv-reader-main-actions__row">
+                <PostAction action="like" post={mainPost} primary={true} actionFeedback={reader.nativePostAction} onAction={onNativePostAction} />
+                <PostAction action="reply" post={mainPost} primary={true} actionFeedback={reader.nativePostAction} onAction={onNativePostAction} />
+                <PostAction action="flag" post={mainPost} primary={true} actionFeedback={reader.nativePostAction} onAction={onNativePostAction} />
+              </div>
             </div>
           )}
         </div>

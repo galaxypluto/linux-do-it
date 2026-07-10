@@ -41,6 +41,11 @@ export function PostAction({ action, post, primary = false, actionFeedback = nul
     disabled = false;
     title = active ? "取消书签" : "添加书签";
     iconHtml = active ? icons.bookmark : icons.bookmarkOutline;
+  } else if (action === "flag") {
+    active = false;
+    disabled = false;
+    title = "举报此帖";
+    iconHtml = icons.flag;
   }
 
   const finalTitle = pending ? `${readerPostActionLabel(action)}处理中...` : title;
@@ -60,13 +65,13 @@ export function PostAction({ action, post, primary = false, actionFeedback = nul
     <button
       type="button"
       className={cn(
-        "ldcv-reader-action-button transition-transform duration-150",
-        "hover:scale-105 active:scale-95",
+        "ldcv-reader-action-button flex items-center justify-center w-7 h-7 rounded-full transition-all duration-200 !bg-transparent !p-0 !min-h-0",
+        "hover:bg-gray-100/80 dark:hover:bg-white/10 active:scale-95",
         primary ? "ldcv-reader-action-button--primary" : "",
         `ldcv-reader-action-button--${action}`,
         active ? "is-active text-red-500 ldcv-reader-action-button--pop" : "text-gray-500 hover:text-gray-700",
         pending ? "is-pending opacity-50 cursor-wait" : "",
-        finalDisabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer transition-colors",
+        finalDisabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer",
         className
       )}
       data-reader-post-action={action}

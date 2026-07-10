@@ -300,6 +300,9 @@ export function readerPostActionLabel(action: NativeComposerAction): string {
   if (action === "like") {
     return "点赞";
   }
+  if (action === "flag") {
+    return "举报窗口";
+  }
   return "书签";
 }
 

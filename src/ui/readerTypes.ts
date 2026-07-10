@@ -3,7 +3,7 @@ import type { ReaderPollResultData } from "../discourse/types";
 import type { ReaderImageViewerState } from "./imageViewer";
 import type { ReaderUserPreviewState } from "./userPreview";
 
-export type ReaderPostAction = "reply" | "like" | "bookmark";
+export type ReaderPostAction = "reply" | "like" | "bookmark" | "flag";
 
 export type NativeComposerAction = ReaderPostAction | "private-message";
 

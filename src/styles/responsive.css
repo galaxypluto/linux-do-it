@@ -157,6 +157,7 @@
   .ldcv-reader-title-actions,
   .ldcv-reader-primary-actions,
   .ldcv-reader-main-actions,
+  .ldcv-reader-main-actions__row,
   .ldcv-reader-open {
     align-self: flex-start;
   }

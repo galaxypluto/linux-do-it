@@ -176,7 +176,7 @@ export function readerContentTemplate(
         <div class="ldcv-reader-title-actions">
           <div class="ldcv-reader-primary-actions">
             ${mainPost ? postActionButtonTemplate("reply", mainPost, true, reader.nativePostAction) : ""}
-            <a class="ldcv-reader-open ldcv-reader-open--primary" href="${escapeAttribute(preferredTopicUrl(data.url, topicUrlView))}" target="_blank" rel="noopener noreferrer">原贴</a>
+            <a class="ldcv-reader-open ldcv-reader-open--primary ldcv-reader-open--icon" href="${escapeAttribute(preferredTopicUrl(data.url, topicUrlView))}" target="_blank" rel="noopener noreferrer" title="原贴" aria-label="原贴"><span class="ldcv-reader-open__icon">${icons.fileText}</span></a>
           </div>
           ${mainPost ? mainPostQuickActionsTemplate(mainPost, reader.nativePostAction, topicUrlView) : ""}
         </div>
@@ -317,6 +317,7 @@ export function mainPostQuickActionsTemplate(
     <div class="ldcv-reader-main-actions" role="group" aria-label="主贴操作">
       ${postActionButtonTemplate("like", post, true, actionFeedback)}
       ${postActionButtonTemplate("bookmark", post, true, actionFeedback)}
+      ${postActionButtonTemplate("flag", post, true, actionFeedback)}
       <a class="ldcv-reader-main-actions__post-link" href="${escapeAttribute(preferredTopicUrl(post.url, topicUrlView))}" target="_blank" rel="noopener noreferrer">#${post.postNumber}</a>
     </div>
   `;
@@ -378,6 +379,7 @@ function replyItemTemplate(
           <div class="ldcv-reader-comment__tools">
             ${postActionButtonTemplate("like", post, false, actionFeedback)}
             ${postActionButtonTemplate("reply", post, false, actionFeedback)}
+            ${postActionButtonTemplate("flag", post, false, actionFeedback)}
             <a href="${escapeAttribute(preferredTopicUrl(post.url, topicUrlView))}" target="_blank" rel="noopener noreferrer">#${post.postNumber}</a>
             ${freshBadge}
             ${post.stats.likes ? `<span>${icons.heart}${compactNumber(post.stats.likes)}</span>` : ""}
@@ -438,6 +440,15 @@ function postActionButtonState(
     };
   }
 
+  if (action === "flag") {
+    return {
+      title: "举报此帖",
+      icon: icons.flag,
+      active: false,
+      disabled: false
+    };
+  }
+
   const active = post.actions.bookmarked === true;
   const disabled = post.actions.canBookmark === false && !active;
   return {
@@ -463,6 +474,9 @@ export function readerPostActionLabel(action: ReaderPostAction): string {
   if (action === "like") {
     return "点赞";
   }
+  if (action === "flag") {
+    return "举报窗口";
+  }
   return "书签";
 }
 
@@ -477,7 +491,7 @@ export function postActionFeedbackTemplate(feedback: ReaderPostActionFeedback | 
   }
 
   const fallbackLink = feedback.fallbackUrl
-    ? ` <a href="${escapeAttribute(feedback.fallbackUrl)}" target="_blank" rel="noopener noreferrer">打开原生视图</a>`
+    ? ` <a class="ldcv-reader-action-feedback__link" href="${escapeAttribute(feedback.fallbackUrl)}" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:underline;text-underline-offset:2px">打开原生视图</a>`
     : "";
   return `<div class="ldcv-reader-action-feedback is-${feedback.status}" role="status">${escapeHtml(feedback.message)}${fallbackLink}</div>`;
 }

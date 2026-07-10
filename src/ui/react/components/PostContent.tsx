@@ -1,5 +1,6 @@
 import * as React from "react";
-import type { TopicReaderPost } from "../../../domain/linuxdo/types";
+import type { TopicReaderPost } from "../../../discourse/types";
+import { BoostList } from "./BoostList";
 
 export type ReaderImageViewerItem = {
   src: string;
@@ -25,9 +26,18 @@ type PostContentProps = {
 
 export function PostContent({ post }: PostContentProps): React.ReactElement {
   return (
-    <div
-      className="ldcv-reader-prose"
-      dangerouslySetInnerHTML={{ __html: post.html || "<p>这个帖子暂时没有可预览正文。</p>" }}
-    />
+    <>
+      <div
+        className="ldcv-reader-prose"
+        dangerouslySetInnerHTML={{ __html: post.html || "<p>这个帖子暂时没有可预览正文。</p>" }}
+      />
+      {(post.boosts && post.boosts.length > 0) && (
+        <BoostList
+          postId={post.id}
+          initialBoosts={post.boosts}
+          canBoost={post.actions?.canBoost === true}
+        />
+      )}
+    </>
   );
 }

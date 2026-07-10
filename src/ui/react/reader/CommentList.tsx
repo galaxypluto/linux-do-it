@@ -21,6 +21,7 @@ type CommentListProps = {
   onCloseUserPreview?: () => void;
   onNativePostAction?: (action: ReaderPostAction, postNumber: number) => void;
   onOpenReaderImage?: (image: ReaderImageViewerState, origin: DOMRect) => void;
+  onBoostAdded?: () => void;
 };
 
 /**
@@ -46,7 +47,8 @@ export function CommentList({
   onOpenUserPreview,
   onCloseUserPreview,
   onNativePostAction,
-  onOpenReaderImage
+  onOpenReaderImage,
+  onBoostAdded
 }: CommentListProps): React.ReactElement {
   if (sortedTree.length === 0) {
     return <div className="ldcv-reader-note">当前已载入内容里还没有评论。</div>;
@@ -78,6 +80,7 @@ export function CommentList({
               onNativePostAction={onNativePostAction}
               onOpenReaderImage={onOpenReaderImage}
               topicUrlView={settings.topicUrlView}
+              onBoostAdded={onBoostAdded}
             />
             {replies.length > 0 && (
               <div className="ldcv-reader-replies">
@@ -101,6 +104,7 @@ export function CommentList({
                       onNativePostAction={onNativePostAction}
                       onOpenReaderImage={onOpenReaderImage}
                       topicUrlView={settings.topicUrlView}
+                      onBoostAdded={onBoostAdded}
                     />
                   );
                 })}
