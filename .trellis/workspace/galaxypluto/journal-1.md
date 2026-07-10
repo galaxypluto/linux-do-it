@@ -78,3 +78,37 @@ Aligned Trellis spec with shadow DOM and layer map; removed cardViewApp; added e
 ### Next Steps
 
 - None - task complete
+
+
+## Session 3: Reader boosts and native post flag
+
+**Date**: 2026-07-10
+**Task**: Reader boosts and native post flag
+**Branch**: `main`
+
+### Summary
+
+Shipped discourse-boosts UI (create/delete) and native Discourse Flag above Reader; documented Flag elevate + boost contracts; skipped Reader boost flag.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `7e0df2e` | (see git log) |
+| `25d8e4e` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
