@@ -145,6 +145,110 @@ Tests required:
 
 ## Other Native Write-Like Actions
 
-- Private message, like, bookmark, reply, read timing, and poll vote are all write-like actions.
+- Private message, like, bookmark, reply, flag, read timing, and poll vote are all write-like actions.
 - Local Reader state may only show success after the native/page bridge/API boundary reports success.
 - Failure must surface local feedback and must not mutate Reader state as if the server accepted the write.
+
+## Scenario: Reader native Flag modal (post only)
+
+### 1. Scope / Trigger
+
+- Trigger: Reader `PostAction` with `action="flag"` opens Discourse's native Flag UI above the Reader overlay.
+- Boost / short-reply flag is **out of scope** for the Reader; do not reintroduce a custom `ReportModal` or `flag-boost` bridge path unless product scope changes.
+
+### 2. Signatures
+
+- Content request: `requestNativePostAction({ action: "flag", topicId, postId, postNumber, postUrl, ... })`.
+- Page bridge: `runNativeFlag(detail)` in `public/pageBridge.js`.
+- Modules: `discourse/components/modal/flag` + `discourse/lib/flag-targets/post-flag`.
+- Elevate class: `ldcv-elevate-native-modal` (`NATIVE_MODAL_ELEVATE_CLASS` in `src/content/pageStyle.ts`).
+
+### 3. Contracts
+
+- Pending feedback label must be `举报窗口`（via `readerPostActionLabel("flag")`）, never fall through to `书签`.
+- On open success, return `opened` / message `已打开举报窗口。` and keep `fallbackUrl` so the success strip can link `打开原生视图`.
+- Before `modal.show`, add `html.ldcv-elevate-native-modal`; remove it when the native modal DOM is gone (MutationObserver after a short mount delay).
+- Reader z-index is ~`2147483646`; elevated native modal/backdrop must sit at or above that while the class is active.
+- Do not implement Reader-owned flag reason lists or `POST /post_actions` for the happy path; the native modal owns submit.
+
+### 4. Validation & Error Matrix
+
+- Missing FlagModal / PostFlag / `modal.show` -> `unsupported` + fallback URL.
+- Not logged in -> `unsupported`「请先登录后再举报。」
+- Cannot resolve native topic/post -> `unsupported`「无法定位这条帖子的举报入口。」
+- `modal.show` throws -> `error`「打开举报窗口失败…」
+
+### 5. Good / Base / Bad Cases
+
+- Good: click flag → pending「举报窗口处理中…」→ native Flag modal visible above Reader → success strip with same-color「打开原生视图」link.
+- Base: native modules unavailable → unsupported feedback + native URL, Reader stays open.
+- Bad: custom in-Reader ReportModal under Reader z-index; pending label shows「书签处理中」; boost bubble opens a broken `flag-boost` path.
+
+### 6. Tests Required
+
+- Unit: `readerPostActionLabel("flag")` / template feedback link class.
+- Bridge/live QA: flag opens native modal while Reader remains mounted; elevate class clears after close.
+
+### 7. Wrong vs Correct
+
+#### Wrong
+```javascript
+// Custom modal inside Reader shadow root at z-50
+modal.show(CustomReportModal, { reasons: hardcodedFlags });
+```
+
+#### Correct
+```javascript
+modal.show(FlagModal, { model: { flagTarget: new PostFlag(), flagModel: post, setHidden } });
+document.documentElement.classList.add("ldcv-elevate-native-modal");
+```
+
+## Scenario: discourse-boosts in Reader
+
+### 1. Scope / Trigger
+
+- Trigger: Topic JSON posts include `boosts` / `can_boost`; Reader renders pills and create/delete flows.
+- Cache: bump `READER_CACHE_VERSION` whenever post shape gains boost fields.
+
+### 2. Signatures
+
+- `createBoost(postId, raw)` → `POST /discourse-boosts/posts/{postId}/boosts` body `{ raw }`
+- `deleteBoost(boostId)` → `DELETE /discourse-boosts/boosts/{boostId}`
+- `fetchBoost(boostId)` → `GET /discourse-boosts/boosts/{boostId}`（补全 `can_delete`）
+- Normalize via `normalizeBoosts` + `sanitizeCookedHtml` on `cooked`.
+
+### 3. Contracts
+
+- Topic-embedded boosts often omit `can_delete`; treat `null` as unknown and fetch before showing delete.
+- After deleting own boost, restore `canBoost` so the add entry returns.
+- Do not sync optimistic local boosts away solely because `initialBoosts` array identity changed; key off post id + boost id set.
+- Reader does **not** ship boost flag UI.
+
+### 4. Validation & Error Matrix
+
+- Missing CSRF → throw; UI rolls back optimistic bubble / delete.
+- Create/delete non-2xx → rollback + inline error string.
+- `fetchBoost` failure → do not open delete menu.
+
+### 5. Good / Base / Bad Cases
+
+- Good: empty `can_boost` shows toolbar rocket; submit optimistic pill; refresh keeps server boost; delete restores add entry.
+- Base: permissions unknown until click; fetch then show delete only.
+- Bad: coerce missing `can_delete` to `false` and hide all interaction; delete without restoring `canBoost`.
+
+### 6. Tests Required
+
+- API normalize: boosts array, missing id not collapsed to `0`, cooked sanitized.
+- UI/live QA: create, delete, re-add; no boost flag entry.
+
+### 7. Wrong vs Correct
+
+#### Wrong
+```typescript
+canDelete: confirmedBoolean(boost.can_delete) ?? false; // unknown becomes false → never fetch
+```
+
+#### Correct
+```typescript
+canDelete: confirmedBoolean(boost.can_delete); // null => fetchBoost before menu
+```
